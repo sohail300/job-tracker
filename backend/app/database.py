@@ -17,8 +17,8 @@ async def get_database() -> AsyncIOMotorClient:
 
 async def connect_to_mongo():
     """Create database connection"""
-    database.client = AsyncIOMotorClient(os.getenv("MONGODB_URL", "mongodb://localhost:27017"))
-    database.database = database.client[os.getenv("DATABASE_NAME", "job_tracker")]
+    database.client = AsyncIOMotorClient(os.getenv("MONGODB_URL"))
+    database.database = database.client[os.getenv("DATABASE_NAME")]
     print("Connected to MongoDB")
 
 async def close_mongo_connection():

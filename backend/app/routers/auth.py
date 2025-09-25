@@ -16,6 +16,10 @@ from ..auth import (
     GITHUB_REDIRECT_URI,
     ACCESS_TOKEN_EXPIRE_MINUTES
 )
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 router = APIRouter(prefix="/auth", tags=["authentication"])
 
@@ -121,7 +125,7 @@ async def github_callback(
             )
             
             # Redirect to frontend with token
-            frontend_url = "http://localhost:5173"
+            frontend_url = os.getenv("FRONTEND_URL")
             return RedirectResponse(
                 url=f"{frontend_url}/auth/success?token={jwt_token}",
                 status_code=status.HTTP_302_FOUND
