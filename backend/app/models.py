@@ -1,7 +1,7 @@
 from pydantic import BaseModel, Field, GetJsonSchemaHandler
 from pydantic.json_schema import JsonSchemaValue
 from pydantic_core import core_schema
-from typing import Optional, Any
+from typing import Optional, Any, Literal
 from datetime import datetime
 from bson import ObjectId
 
@@ -38,6 +38,9 @@ class JobApplication(BaseModel):
     photo_public_id: Optional[str] = None
     photo_url: Optional[str] = None
     notes: Optional[str] = Field(None, max_length=1000)
+    status: Literal["Pending", "Not Hiring", "Rejected", "Accepted"] = Field(
+        default="Pending"
+    )
 
     model_config = {
         "populate_by_name": True,
@@ -108,6 +111,9 @@ class JobApplicationCreate(BaseModel):
     link_type: Optional[str] = Field(None, max_length=50)
     date_of_applying: datetime
     notes: Optional[str] = Field(None, max_length=1000)
+    status: Literal["Pending", "Not Hiring", "Rejected", "Accepted"] = Field(
+        default="Pending"
+    )
 
     model_config = {
         "json_schema_extra": {
@@ -132,6 +138,7 @@ class JobApplicationUpdate(BaseModel):
     photo_public_id: Optional[str] = None
     photo_url: Optional[str] = None
     notes: Optional[str] = Field(None, max_length=1000)
+    status: Optional[Literal["Pending", "Not Hiring", "Rejected", "Accepted"]] = None
 
     model_config = {
         "json_schema_extra": {

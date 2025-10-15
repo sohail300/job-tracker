@@ -28,6 +28,7 @@ async def create_application(
     link: Optional[str] = Form(None),
     link_type: Optional[str] = Form(None),
     date_of_applying: str = Form(...),
+    status: Optional[str] = Form("Pending"),
     notes: Optional[str] = Form(None),
     photo: Optional[UploadFile] = File(None),
     current_user: dict = Depends(get_current_user),
@@ -47,6 +48,11 @@ async def create_application(
             photo_public_id = upload_result["public_id"]
             photo_url = upload_result["secure_url"]
         
+        # Validate status
+        allowed_statuses = {"Pending", "Not Hiring", "Rejected", "Accepted"}
+        if status is None or status not in allowed_statuses:
+            status = "Pending"
+
         # Create application data
         application_data = {
             "user_id": ObjectId(current_user["user_id"]),
@@ -55,6 +61,7 @@ async def create_application(
             "link": link,
             "link_type": link_type,
             "date_of_applying": date_obj,
+            "status": status,
             "photo_public_id": photo_public_id,
             "photo_url": photo_url,
             "notes": notes
@@ -120,6 +127,7 @@ async def update_application(
     link: Optional[str] = Form(None),
     link_type: Optional[str] = Form(None),
     date_of_applying: Optional[str] = Form(None),
+    status: Optional[str] = Form(None),
     notes: Optional[str] = Form(None),
     photo: Optional[UploadFile] = File(None),
     current_user: dict = Depends(get_current_user),
@@ -153,6 +161,10 @@ async def update_application(
             update_data["date_of_applying"] = datetime.fromisoformat(date_of_applying.replace('Z', '+00:00'))
         if notes is not None:
             update_data["notes"] = notes
+        if status is not None:
+            allowed_statuses = {"Pending", "Not Hiring", "Rejected", "Accepted"}
+            if status in allowed_statuses:
+                update_data["status"] = status
         
         # Handle file upload to Cloudinary
         if photo and photo.filename:

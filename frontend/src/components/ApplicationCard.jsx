@@ -46,6 +46,13 @@ const ApplicationCard = ({ application, onDelete, viewMode = "card" }) => {
 
   const isRecent = getDaysAgo() <= 7;
 
+  const statusStyles = {
+    Pending: "bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200",
+    "Not Hiring": "bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200",
+    Rejected: "bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200",
+    Accepted: "bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200",
+  };
+
   if (viewMode === "list") {
     return (
       <div className="card-compact group">
@@ -78,7 +85,7 @@ const ApplicationCard = ({ application, onDelete, viewMode = "card" }) => {
                     <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
                       <Mail className="h-3 w-3 mr-1 flex-shrink-0" />
                       <span className="truncate max-w-32">
-                        {application.email_or_portal}
+                        {application.email_or_portal.split(" ").map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(" ")}
                       </span>
                     </div>
                   )}
@@ -96,6 +103,11 @@ const ApplicationCard = ({ application, onDelete, viewMode = "card" }) => {
                       </span>
                     )}
                   </div>
+                  {application.status && (
+                    <span className={`px-2 py-0.5 text-xs rounded-full ${statusStyles[application.status] || "bg-gray-100 text-gray-800"}`}>
+                      {application.status}
+                    </span>
+                  )}
                 </div>
               </div>
             </div>
@@ -207,6 +219,13 @@ const ApplicationCard = ({ application, onDelete, viewMode = "card" }) => {
                 {format(new Date(application.date_of_applying), "MMM dd, yyyy")}
               </span>
             </div>
+            {application.status && (
+              <div className="mt-2">
+                <span className={`px-2 py-1 text-xs rounded-full ${statusStyles[application.status] || "bg-gray-100 text-gray-800"}`}>
+                  {application.status}
+                </span>
+              </div>
+            )}
           </div>
 
           {/* Actions Menu */}

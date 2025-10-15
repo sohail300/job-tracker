@@ -44,6 +44,7 @@ const AddEditApplication = () => {
       link_type: "",
       other_link_type: "",
       date_of_applying: format(new Date(), "yyyy-MM-dd"),
+      status: "Pending",
       notes: "",
     },
   });
@@ -75,6 +76,7 @@ const AddEditApplication = () => {
         format(new Date(application.date_of_applying), "yyyy-MM-dd")
       );
       setValue("notes", application.notes || "");
+      setValue("status", application.status || "Pending");
 
       if (application.photo_url) {
         setPhotoPreview(applicationsAPI.getPhotoUrl(application.photo_url));
@@ -144,6 +146,7 @@ const AddEditApplication = () => {
       formData.append("link_type", linkType || "");
 
       formData.append("date_of_applying", data.date_of_applying);
+      formData.append("status", data.status || "Pending");
       formData.append("notes", data.notes || "");
 
       if (photoFile) {
@@ -291,6 +294,20 @@ const AddEditApplication = () => {
                 {errors.date_of_applying.message}
               </p>
             )}
+          </div>
+
+          {/* Status */}
+          <div>
+            <label className="flex items-center text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <ChevronDown className="h-4 w-4 mr-2" />
+              Status
+            </label>
+            <select {...register("status")} className="input-field">
+              <option value="Pending">Pending</option>
+              <option value="Not Hiring">Not Hiring</option>
+              <option value="Rejected">Rejected</option>
+              <option value="Accepted">Accepted</option>
+            </select>
           </div>
 
           {/* Photo Upload */}
