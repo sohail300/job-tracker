@@ -25,6 +25,7 @@ const Home = () => {
   const [dateFilters, setDateFilters] = useState({
     startDate: "",
     endDate: "",
+    status: "",
   });
 
   useEffect(() => {
@@ -85,6 +86,11 @@ const Home = () => {
         }
         return true;
       });
+    }
+
+    // Status filter
+    if (dateFilters.status) {
+      filtered = filtered.filter((app) => app.status === dateFilters.status);
     }
 
     setFilteredApplications(filtered);
@@ -233,10 +239,7 @@ const Home = () => {
 
           <div className="flex items-center justify-between space-x-4">
             {/* Filter Bar */}
-            <FilterBar
-              onFilterChange={handleFilterChange}
-              value={dateFilters}
-            />
+            <FilterBar onFilterChange={handleFilterChange} value={dateFilters} />
             {/* View Mode Toggle */}
             <div className="flex items-end w-fit justify-end bg-gray-100 dark:bg-gray-800 rounded-xl p-1">
               <button
@@ -266,7 +269,7 @@ const Home = () => {
         </div>
 
         {/* Active filter chips */}
-        {(dateFilters.startDate || dateFilters.endDate) && (
+        {(dateFilters.startDate || dateFilters.endDate || dateFilters.status) && (
           <div className="flex items-start flex-wrap gap-2">
             {dateFilters.startDate && (
               <span className="inline-flex items-center gap-2 px-3 py-1.5 text-xs font-medium bg-primary-50 dark:bg-primary-900/20 text-primary-800 dark:text-primary-200 border border-primary-200 dark:border-primary-800 rounded-full">
@@ -294,9 +297,21 @@ const Home = () => {
                 </button>
               </span>
             )}
+            {dateFilters.status && (
+              <span className="inline-flex items-center gap-2 px-3 py-1.5 text-xs font-medium bg-primary-50 dark:bg-primary-900/20 text-primary-800 dark:text-primary-200 border border-primary-200 dark:border-primary-800 rounded-full">
+                Status: {dateFilters.status}
+                <button
+                  onClick={() => setDateFilters((p) => ({ ...p, status: "" }))}
+                  className="ml-1 text-primary-700 dark:text-primary-300 hover:text-primary-900 dark:hover:text-primary-100"
+                  aria-label="Clear status filter"
+                >
+                  <X className="h-3 w-3" />
+                </button>
+              </span>
+            )}
             {dateFilters.startDate && dateFilters.endDate && (
               <button
-                onClick={() => setDateFilters({ startDate: "", endDate: "" })}
+                onClick={() => setDateFilters({ startDate: "", endDate: "", status: "" })}
                 className="inline-flex items-center gap-2 px-3 py-1.5 text-xs font-medium bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-800 rounded-full hover:bg-red-100 dark:hover:bg-red-900/30"
               >
                 Clear all

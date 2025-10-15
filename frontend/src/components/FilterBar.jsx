@@ -6,6 +6,7 @@ const FilterBar = ({ onFilterChange, value }) => {
   const [filters, setFilters] = useState({
     startDate: "",
     endDate: "",
+    status: "",
   });
 
   // Sync fields from parent value (so chips actions reflect in modal)
@@ -14,15 +15,17 @@ const FilterBar = ({ onFilterChange, value }) => {
     const next = {
       startDate: value.startDate || "",
       endDate: value.endDate || "",
+      status: value.status || "",
     };
     if (
       next.startDate !== filters.startDate ||
-      next.endDate !== filters.endDate
+      next.endDate !== filters.endDate ||
+      next.status !== filters.status
     ) {
       setFilters(next);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [value?.startDate, value?.endDate]);
+  }, [value?.startDate, value?.endDate, value?.status]);
 
   // Close on Escape
   useEffect(() => {
@@ -54,12 +57,12 @@ const FilterBar = ({ onFilterChange, value }) => {
   };
 
   const clearFilters = () => {
-    const clearedFilters = { startDate: "", endDate: "" };
+    const clearedFilters = { startDate: "", endDate: "", status: "" };
     setFilters(clearedFilters);
     onFilterChange(clearedFilters);
   };
 
-  const hasActiveFilters = filters.startDate || filters.endDate;
+  const hasActiveFilters = filters.startDate || filters.endDate || filters.status;
 
   const getFilterSummary = () => {
     if (!hasActiveFilters) return null;
@@ -86,7 +89,7 @@ const FilterBar = ({ onFilterChange, value }) => {
             <div className="p-1.5 bg-gray-100 dark:bg-gray-800 rounded-lg group-hover:bg-primary-100 dark:group-hover:bg-primary-900 transition-colors duration-200">
               <Filter className="h-4 w-4" />
             </div>
-            <span className="font-medium">Date Filters</span>
+            <span className="font-medium">Filters</span>
           </div>
 
           {hasActiveFilters && (
@@ -125,9 +128,7 @@ const FilterBar = ({ onFilterChange, value }) => {
               <div className="flex items-start justify-between">
                 <div className="flex items-center space-x-2">
                   <Calendar className="h-5 w-5 text-primary-600 dark:text-primary-400" />
-                  <h3 className="font-semibold text-gray-900 dark:text-gray-100">
-                    Filter by Application Date
-                  </h3>
+                  <h3 className="font-semibold text-gray-900 dark:text-gray-100">Filters</h3>
                 </div>
                 <button
                   onClick={() => setShowFilters(false)}
@@ -179,6 +180,23 @@ const FilterBar = ({ onFilterChange, value }) => {
                       {new Date(filters.endDate).toLocaleDateString()}
                     </p>
                   )}
+                </div>
+
+                <div className="space-y-2 md:col-span-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                    Status
+                  </label>
+                  <select
+                    value={filters.status}
+                    onChange={(e) => handleFilterChange("status", e.target.value)}
+                    className="input-field"
+                  >
+                    <option value="">All statuses</option>
+                    <option value="Pending">Pending</option>
+                    <option value="Not Hiring">Not Hiring</option>
+                    <option value="Rejected">Rejected</option>
+                    <option value="Accepted">Accepted</option>
+                  </select>
                 </div>
               </div>
 

@@ -44,8 +44,6 @@ const ApplicationCard = ({ application, onDelete, viewMode = "card" }) => {
     return diffDays;
   };
 
-  const isRecent = getDaysAgo() <= 7;
-
   const statusStyles = {
     Pending: "bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200",
     "Not Hiring": "bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200",
@@ -103,11 +101,7 @@ const ApplicationCard = ({ application, onDelete, viewMode = "card" }) => {
                       </span>
                     )}
                   </div>
-                  {application.status && (
-                    <span className={`px-2 py-0.5 text-xs rounded-full ${statusStyles[application.status] || "bg-gray-100 text-gray-800"}`}>
-                      {application.status}
-                    </span>
-                  )}
+                  
                 </div>
               </div>
             </div>
@@ -182,13 +176,11 @@ const ApplicationCard = ({ application, onDelete, viewMode = "card" }) => {
   return (
     <div className="card group relative overflow-hidden">
       {/* Recent Badge */}
-      {isRecent && (
-        <div className="absolute top-4 right-4 z-10">
-          <span className="px-2 py-1 bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 text-xs font-medium rounded-full">
-            Recent
-          </span>
-        </div>
-      )}
+      {application.status && (
+                    <span className={`px-2 py-0.5 text-xs rounded-full ${statusStyles[application.status] || "bg-gray-100 text-gray-800"}`}>
+                      {application.status}
+                    </span>
+                  )}
 
       <div className="space-y-4">
         {/* Header */}
@@ -219,24 +211,6 @@ const ApplicationCard = ({ application, onDelete, viewMode = "card" }) => {
                 {format(new Date(application.date_of_applying), "MMM dd, yyyy")}
               </span>
             </div>
-            {application.status && (
-              <div className="mt-2">
-                <span className={`px-2 py-1 text-xs rounded-full ${statusStyles[application.status] || "bg-gray-100 text-gray-800"}`}>
-                  {application.status}
-                </span>
-              </div>
-            )}
-          </div>
-
-          {/* Actions Menu */}
-          <div className="flex-shrink-0 relative">
-            <button
-              onClick={() => setShowActions(!showActions)}
-              className="p-2 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all duration-200"
-              title="More actions"
-            >
-              <MoreVertical className="h-4 w-4" />
-            </button>
           </div>
         </div>
 
