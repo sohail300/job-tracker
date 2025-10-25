@@ -25,7 +25,7 @@ const Home = () => {
   const [dateFilters, setDateFilters] = useState({
     startDate: "",
     endDate: "",
-    status: "",
+    status: [],
   });
 
   useEffect(() => {
@@ -89,8 +89,8 @@ const Home = () => {
     }
 
     // Status filter
-    if (dateFilters.status) {
-      filtered = filtered.filter((app) => app.status === dateFilters.status);
+    if (dateFilters.status.length > 0) {
+      filtered = filtered.filter((app) => dateFilters.status.includes(app.status));
     }
 
     setFilteredApplications(filtered);
@@ -269,7 +269,7 @@ const Home = () => {
         </div>
 
         {/* Active filter chips */}
-        {(dateFilters.startDate || dateFilters.endDate || dateFilters.status) && (
+        {(dateFilters.startDate || dateFilters.endDate || dateFilters.status.length > 0) && (
           <div className="flex items-start flex-wrap gap-2">
             {dateFilters.startDate && (
               <span className="inline-flex items-center gap-2 px-3 py-1.5 text-xs font-medium bg-primary-50 dark:bg-primary-900/20 text-primary-800 dark:text-primary-200 border border-primary-200 dark:border-primary-800 rounded-full">
@@ -297,21 +297,21 @@ const Home = () => {
                 </button>
               </span>
             )}
-            {dateFilters.status && (
-              <span className="inline-flex items-center gap-2 px-3 py-1.5 text-xs font-medium bg-primary-50 dark:bg-primary-900/20 text-primary-800 dark:text-primary-200 border border-primary-200 dark:border-primary-800 rounded-full">
-                Status: {dateFilters.status}
+            {dateFilters.status.map((status) => (
+              <span key={status} className="inline-flex items-center gap-2 px-3 py-1.5 text-xs font-medium bg-primary-50 dark:bg-primary-900/20 text-primary-800 dark:text-primary-200 border border-primary-200 dark:border-primary-800 rounded-full">
+                Status: {status}
                 <button
-                  onClick={() => setDateFilters((p) => ({ ...p, status: "" }))}
+                  onClick={() => setDateFilters((p) => ({ ...p, status: p.status.filter(s => s !== status) }))}
                   className="ml-1 text-primary-700 dark:text-primary-300 hover:text-primary-900 dark:hover:text-primary-100"
-                  aria-label="Clear status filter"
+                  aria-label={`Clear ${status} filter`}
                 >
                   <X className="h-3 w-3" />
                 </button>
               </span>
-            )}
-            {dateFilters.startDate && dateFilters.endDate && (
+            ))}
+            {(dateFilters.startDate || dateFilters.endDate || dateFilters.status.length > 0) && (
               <button
-                onClick={() => setDateFilters({ startDate: "", endDate: "", status: "" })}
+                onClick={() => setDateFilters({ startDate: "", endDate: "", status: [] })}
                 className="inline-flex items-center gap-2 px-3 py-1.5 text-xs font-medium bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-800 rounded-full hover:bg-red-100 dark:hover:bg-red-900/30"
               >
                 Clear all

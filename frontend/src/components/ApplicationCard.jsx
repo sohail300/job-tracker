@@ -44,13 +44,6 @@ const ApplicationCard = ({ application, onDelete, viewMode = "card" }) => {
     return diffDays;
   };
 
-  const statusStyles = {
-    Pending: "bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200",
-    "Not Hiring": "bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200",
-    Rejected: "bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200",
-    Accepted: "bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200",
-  };
-
   if (viewMode === "list") {
     return (
       <div className="card-compact group">
@@ -78,15 +71,6 @@ const ApplicationCard = ({ application, onDelete, viewMode = "card" }) => {
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 truncate">
                   {application.company_name}
                 </h3>
-                <div className="flex items-center flex-wrap gap-x-4 gap-y-1 mt-1">
-                  {application.email_or_portal && (
-                    <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
-                      <Mail className="h-3 w-3 mr-1 flex-shrink-0" />
-                      <span className="truncate max-w-32">
-                        {application.email_or_portal.split(" ").map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(" ")}
-                      </span>
-                    </div>
-                  )}
                   <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
                     <Calendar className="h-3 w-3 mr-1 flex-shrink-0" />
                     <span>
@@ -95,14 +79,7 @@ const ApplicationCard = ({ application, onDelete, viewMode = "card" }) => {
                         "MMM dd, yyyy"
                       )}
                     </span>
-                    {isRecent && (
-                      <span className="ml-2 px-2 py-0.5 bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 text-xs rounded-full">
-                        Recent
-                      </span>
-                    )}
                   </div>
-                  
-                </div>
               </div>
             </div>
 
@@ -111,7 +88,7 @@ const ApplicationCard = ({ application, onDelete, viewMode = "card" }) => {
               <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
                 <Mail className="h-4 w-4 mr-3 flex-shrink-0" />
                 <span className="truncate flex-1 text-capitalize">
-                  {application.link_type}
+                  {application.link_type.split(" ").map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(" ")}
                 </span>
               </div>
             )}
@@ -175,13 +152,6 @@ const ApplicationCard = ({ application, onDelete, viewMode = "card" }) => {
 
   return (
     <div className="card group relative overflow-hidden">
-      {/* Recent Badge */}
-      {application.status && (
-                    <span className={`px-2 py-0.5 text-xs rounded-full ${statusStyles[application.status] || "bg-gray-100 text-gray-800"}`}>
-                      {application.status}
-                    </span>
-                  )}
-
       <div className="space-y-4">
         {/* Header */}
         <div className="flex items-start space-x-4">
@@ -220,7 +190,7 @@ const ApplicationCard = ({ application, onDelete, viewMode = "card" }) => {
             <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
               <Mail className="h-4 w-4 mr-3 flex-shrink-0" />
               <span className="truncate flex-1 text-capitalize">
-                {application.link_type}
+                {application.link_type.split(" ").map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(" ")}
               </span>
             </div>
           )}

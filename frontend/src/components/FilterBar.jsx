@@ -6,7 +6,7 @@ const FilterBar = ({ onFilterChange, value }) => {
   const [filters, setFilters] = useState({
     startDate: "",
     endDate: "",
-    status: "",
+    status: [],
   });
 
   // Sync fields from parent value (so chips actions reflect in modal)
@@ -15,12 +15,12 @@ const FilterBar = ({ onFilterChange, value }) => {
     const next = {
       startDate: value.startDate || "",
       endDate: value.endDate || "",
-      status: value.status || "",
+      status: value.status || [],
     };
     if (
       next.startDate !== filters.startDate ||
       next.endDate !== filters.endDate ||
-      next.status !== filters.status
+      JSON.stringify(next.status) !== JSON.stringify(filters.status)
     ) {
       setFilters(next);
     }
@@ -56,13 +56,23 @@ const FilterBar = ({ onFilterChange, value }) => {
     onFilterChange(newFilters);
   };
 
+  const handleStatusChange = (statusValue) => {
+    const newStatus = filters.status.includes(statusValue)
+      ? filters.status.filter(s => s !== statusValue)
+      : [...filters.status, statusValue];
+    
+    const newFilters = { ...filters, status: newStatus };
+    setFilters(newFilters);
+    onFilterChange(newFilters);
+  };
+
   const clearFilters = () => {
-    const clearedFilters = { startDate: "", endDate: "", status: "" };
+    const clearedFilters = { startDate: "", endDate: "", status: [] };
     setFilters(clearedFilters);
     onFilterChange(clearedFilters);
   };
 
-  const hasActiveFilters = filters.startDate || filters.endDate || filters.status;
+  const hasActiveFilters = filters.startDate || filters.endDate || filters.status.length > 0;
 
   const getFilterSummary = () => {
     if (!hasActiveFilters) return null;
@@ -186,17 +196,19 @@ const FilterBar = ({ onFilterChange, value }) => {
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                     Status
                   </label>
-                  <select
-                    value={filters.status}
-                    onChange={(e) => handleFilterChange("status", e.target.value)}
-                    className="input-field"
-                  >
-                    <option value="">All statuses</option>
-                    <option value="Pending">Pending</option>
-                    <option value="Not Hiring">Not Hiring</option>
-                    <option value="Rejected">Rejected</option>
-                    <option value="Accepted">Accepted</option>
-                  </select>
+                  <div className="space-y-2">
+                    {["Pending", "Not Hiring", "Rejected", "Accepted"].map((status) => (
+                      <label key={status} className="flex items-center space-x-3 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={filters.status.includes(status)}
+                          onChange={() => handleStatusChange(status)}
+                          className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 dark:border-gray-600 rounded"
+                        />
+                        <span className="text-sm text-gray-700 dark:text-gray-300">{status}</span>
+                      </label>
+                    ))}
+                  </div>
                 </div>
               </div>
 
