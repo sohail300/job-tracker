@@ -44,6 +44,22 @@ const ApplicationCard = ({ application, onDelete, viewMode = "card" }) => {
     return diffDays;
   };
 
+  const getStatusBadgeClasses = (status) => {
+    const baseClasses = "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium";
+    
+    switch (status) {
+      case "Accepted":
+        return `${baseClasses} bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400`;
+      case "Rejected":
+        return `${baseClasses} bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400`;
+      case "Not Hiring":
+        return `${baseClasses} bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400`;
+      case "Pending":
+      default:
+        return `${baseClasses} bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400`;
+    }
+  };
+
   if (viewMode === "list") {
     return (
       <div className="card-compact group">
@@ -80,6 +96,12 @@ const ApplicationCard = ({ application, onDelete, viewMode = "card" }) => {
                       )}
                     </span>
                   </div>
+              </div>
+              {/* Status Badge */}
+              <div className="flex-shrink-0 ml-2">
+                <span className={getStatusBadgeClasses(application.status)}>
+                  {application.status}
+                </span>
               </div>
             </div>
 
@@ -172,9 +194,17 @@ const ApplicationCard = ({ application, onDelete, viewMode = "card" }) => {
 
           {/* Company Info */}
           <div className="flex-1 min-w-0">
-            <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 truncate mb-1">
-              {application.company_name}
-            </h3>
+            <div className="flex items-start justify-between">
+              <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 truncate mb-1">
+                {application.company_name}
+              </h3>
+              {/* Status Badge */}
+              <div className="flex-shrink-0 ml-2">
+                <span className={getStatusBadgeClasses(application.status)}>
+                  {application.status}
+                </span>
+              </div>
+            </div>
             <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
               <Calendar className="h-4 w-4 mr-2 flex-shrink-0" />
               <span>
