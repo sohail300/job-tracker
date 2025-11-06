@@ -36,11 +36,11 @@ const Layout = ({ children }) => {
             </div>
 
             {/* Desktop Navigation */}
-            <nav className="hidden md:flex items-center space-x-1">
+            <nav className="hidden md:flex items-center space-x-4">
               <Link
-                to="/"
+                to="/applications"
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
-                  location.pathname === "/"
+                  location.pathname === "/applications" || location.pathname.startsWith("/applications/")
                     ? "bg-primary-100 dark:bg-primary-900 text-primary-700 dark:text-primary-300 shadow-soft"
                     : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800"
                 }`}
@@ -48,9 +48,9 @@ const Layout = ({ children }) => {
                 Applications
               </Link>
               <Link
-                to="/add"
+                to="/applications/add"
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
-                  location.pathname === "/add"
+                  location.pathname === "/applications/add"
                     ? "bg-primary-100 dark:bg-primary-900 text-primary-700 dark:text-primary-300 shadow-soft"
                     : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800"
                 }`}
@@ -128,9 +128,9 @@ const Layout = ({ children }) => {
             <div className="md:hidden border-t border-gray-200 dark:border-gray-700 py-4 animate-slide-up">
               <nav className="flex flex-col space-y-2">
                 <Link
-                  to="/"
+                  to="/applications"
                   className={`px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 ${
-                    location.pathname === "/"
+                    location.pathname === "/applications" || location.pathname.startsWith("/applications/")
                       ? "bg-primary-100 dark:bg-primary-900 text-primary-700 dark:text-primary-300"
                       : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800"
                   }`}
@@ -139,9 +139,9 @@ const Layout = ({ children }) => {
                   Applications
                 </Link>
                 <Link
-                  to="/add"
+                  to="/applications/add"
                   className={`px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 ${
-                    location.pathname === "/add"
+                    location.pathname === "/applications/add"
                       ? "bg-primary-100 dark:bg-primary-900 text-primary-700 dark:text-primary-300"
                       : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800"
                   }`}

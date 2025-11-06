@@ -13,20 +13,31 @@ import {
 import { format } from "date-fns";
 import { applicationsAPI } from "../services/api";
 import { useState } from "react";
+import { App as AntdApp } from "antd";
 
 const ApplicationCard = ({ application, onDelete, viewMode = "card" }) => {
   const [showActions, setShowActions] = useState(false);
 
-  const handleDelete = async () => {
-    if (window.confirm("Are you sure you want to delete this application?")) {
-      try {
-        await applicationsAPI.delete(application._id);
-        onDelete(application._id);
-      } catch (error) {
-        console.error("Error deleting application:", error);
-        alert("Failed to delete application");
-      }
-    }
+  const { modal, message } = AntdApp.useApp();
+
+  const confirmDelete = () => {
+    modal.confirm({
+      title: "Delete this application?",
+      content: "This action cannot be undone.",
+      okText: "Delete",
+      okType: "danger",
+      cancelText: "Cancel",
+      centered: true,
+      onOk: async () => {
+        try {
+          await applicationsAPI.delete(application._id);
+          onDelete(application._id);
+        } catch (error) {
+          console.error("Error deleting application:", error);
+          message.error("Failed to delete application");
+        }
+      },
+    });
   };
 
   const getPhotoUrl = () => {
@@ -150,14 +161,20 @@ const ApplicationCard = ({ application, onDelete, viewMode = "card" }) => {
                 </span>
                 <div className="flex items-center space-x-2">
                   <Link
-                    to={`/edit/${application._id}`}
+                    to={`/applications/edit/${application._id}`}
                     className="btn-ghost text-xs px-3 py-1.5"
+                    onClick={() => {
+                      try {
+                        sessionStorage.setItem("home.scrollY", String(window.scrollY));
+                        sessionStorage.setItem("home.lastEditedId", String(application._id));
+                      } catch {}
+                    }}
                   >
                     Edit
                   </Link>
                   <button
                     onClick={() => {
-                      handleDelete();
+                      confirmDelete();
                     }}
                     className="flex items-center px-3 py-1.5 text-xs rounded-lg text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors duration-200"
                   >
@@ -261,14 +278,20 @@ const ApplicationCard = ({ application, onDelete, viewMode = "card" }) => {
             </span>
             <div className="flex items-center justify-center space-x-2 whitespace-nowrap">
               <Link
-                to={`/edit/${application._id}`}
+                to={`/applications/edit/${application._id}`}
                 className="btn-ghost text-xs inline-flex items-center h-8 px-4"
+                onClick={() => {
+                  try {
+                    sessionStorage.setItem("home.scrollY", String(window.scrollY));
+                    sessionStorage.setItem("home.lastEditedId", String(application._id));
+                  } catch {}
+                }}
               >
                 Edit
               </Link>
               <button
                 onClick={() => {
-                  handleDelete();
+                  confirmDelete();
                 }}
                 className="inline-flex items-center h-8 px-4 text-xs rounded-lg text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors duration-200"
               >

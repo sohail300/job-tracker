@@ -1,12 +1,15 @@
 import { useEffect, useState } from "react";
 import { Calendar, Filter, X, ChevronDown, ChevronUp } from "lucide-react";
+import { Modal, DatePicker, Checkbox, Select, Button, Tag } from "antd";
+import dayjs from "dayjs";
 
-const FilterBar = ({ onFilterChange, value }) => {
+const FilterBar = ({ onFilterChange, value, applicationTypes = [] }) => {
   const [showFilters, setShowFilters] = useState(false);
   const [filters, setFilters] = useState({
     startDate: "",
     endDate: "",
     status: [],
+    applicationTypes: [],
   });
 
   // Sync fields from parent value (so chips actions reflect in modal)
@@ -16,16 +19,18 @@ const FilterBar = ({ onFilterChange, value }) => {
       startDate: value.startDate || "",
       endDate: value.endDate || "",
       status: value.status || [],
+      applicationTypes: value.applicationTypes || [],
     };
     if (
       next.startDate !== filters.startDate ||
       next.endDate !== filters.endDate ||
-      JSON.stringify(next.status) !== JSON.stringify(filters.status)
+      JSON.stringify(next.status) !== JSON.stringify(filters.status) ||
+      JSON.stringify(next.applicationTypes) !== JSON.stringify(filters.applicationTypes)
     ) {
       setFilters(next);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [value?.startDate, value?.endDate, value?.status]);
+  }, [value?.startDate, value?.endDate, value?.status, value?.applicationTypes]);
 
   // Close on Escape
   useEffect(() => {
@@ -67,12 +72,12 @@ const FilterBar = ({ onFilterChange, value }) => {
   };
 
   const clearFilters = () => {
-    const clearedFilters = { startDate: "", endDate: "", status: [] };
+    const clearedFilters = { startDate: "", endDate: "", status: [], applicationTypes: [] };
     setFilters(clearedFilters);
     onFilterChange(clearedFilters);
   };
 
-  const hasActiveFilters = filters.startDate || filters.endDate || filters.status.length > 0;
+  const hasActiveFilters = filters.startDate || filters.endDate || filters.status.length > 0 || filters.applicationTypes.length > 0;
 
   const getFilterSummary = () => {
     if (!hasActiveFilters) return null;
@@ -120,189 +125,99 @@ const FilterBar = ({ onFilterChange, value }) => {
 
       {/* Active filter chips are rendered in Home.jsx */}
 
-      {/* Modal Dialog */}
-      {showFilters && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4"
-          role="dialog"
-          aria-modal="true"
-          aria-label="Filter dialog"
-          onClick={() => setShowFilters(false)}
-        >
-          <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
-          <div
-            className="relative z-10 w-full max-w-lg"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="card-compact animate-slide-up">
-              <div className="flex items-start justify-between">
-                <div className="flex items-center space-x-2">
-                  <Calendar className="h-5 w-5 text-primary-600 dark:text-primary-400" />
-                  <h3 className="font-semibold text-gray-900 dark:text-gray-100">Filters</h3>
-                </div>
-                <button
-                  onClick={() => setShowFilters(false)}
-                  className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
-                  aria-label="Close filter dialog"
-                >
-                  <X className="h-5 w-5" />
-                </button>
-              </div>
+      <Modal
+        title={
+          <div className="flex items-center space-x-2">
+            <Calendar className="h-5 w-5 text-primary-600 dark:text-primary-400" />
+            <span>Filters</span>
+          </div>
+        }
+        open={showFilters}
+        onCancel={() => setShowFilters(false)}
+        footer={null}
+        destroyOnClose
+      >
+        <div className="mt-2 grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="space-y-2 md:col-span-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              Date Range
+            </label>
+            <DatePicker.RangePicker
+              allowEmpty={[true, true]}
+              value={[
+                filters.startDate ? dayjs(filters.startDate) : null,
+                filters.endDate ? dayjs(filters.endDate) : null,
+              ]}
+              onChange={(vals) => {
+                const [start, end] = vals || [];
+                handleFilterChange("startDate", start ? start.format("YYYY-MM-DD") : "");
+                handleFilterChange("endDate", end ? end.format("YYYY-MM-DD") : "");
+              }}
+              style={{ width: "100%" }}
+            />
+          </div>
 
-              <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-2">
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                    From Date
-                  </label>
-                  <input
-                    type="date"
-                    value={filters.startDate}
-                    onChange={(e) =>
-                      handleFilterChange("startDate", e.target.value)
-                    }
-                    className="input-field"
-                    max={filters.endDate || undefined}
-                  />
-                  {filters.startDate && (
-                    <p className="text-xs text-gray-500 dark:text-gray-400">
-                      Showing applications from{" "}
-                      {new Date(filters.startDate).toLocaleDateString()}
-                    </p>
-                  )}
-                </div>
+          <div className="space-y-2 md:col-span-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              Status
+            </label>
+            <Checkbox.Group
+              options={["Pending", "Not Hiring", "Rejected", "Accepted"]}
+              value={filters.status}
+              onChange={(list) => handleFilterChange("status", list)}
+            />
+          </div>
 
-                <div className="space-y-2">
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                    To Date
-                  </label>
-                  <input
-                    type="date"
-                    value={filters.endDate}
-                    onChange={(e) =>
-                      handleFilterChange("endDate", e.target.value)
-                    }
-                    className="input-field"
-                    min={filters.startDate || undefined}
-                  />
-                  {filters.endDate && (
-                    <p className="text-xs text-gray-500 dark:text-gray-400">
-                      Showing applications until{" "}
-                      {new Date(filters.endDate).toLocaleDateString()}
-                    </p>
-                  )}
-                </div>
+          <div className="space-y-2 md:col-span-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              Application Types
+            </label>
+            {applicationTypes.length === 0 ? (
+              <p className="text-sm text-gray-500 dark:text-gray-400">No application types found.</p>
+            ) : (
+              <Select
+                mode="multiple"
+                allowClear
+                placeholder="Select application types"
+                value={filters.applicationTypes}
+                onChange={(vals) => handleFilterChange("applicationTypes", vals)}
+                options={applicationTypes.map((t) => ({ value: t, label: String(t).split(" ").map(w => w.charAt(0).toUpperCase()+w.slice(1)).join(" ") }))}
+                style={{ width: "100%" }}
+              />
+            )}
+          </div>
 
-                <div className="space-y-2 md:col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Status
-                  </label>
-                  <div className="space-y-2">
-                    {["Pending", "Not Hiring", "Rejected", "Accepted"].map((status) => (
-                      <label key={status} className="flex items-center space-x-3 cursor-pointer">
-                        <input
-                          type="checkbox"
-                          checked={filters.status.includes(status)}
-                          onChange={() => handleStatusChange(status)}
-                          className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 dark:border-gray-600 rounded"
-                        />
-                        <span className="text-sm text-gray-700 dark:text-gray-300">{status}</span>
-                      </label>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              <div className="mt-6 space-y-3">
-                <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                  Quick Filters
-                </p>
-                <div className="flex flex-wrap gap-2">
-                  <button
-                    onClick={() => {
-                      const today = new Date();
-                      const lastWeek = new Date(
-                        today.getTime() - 7 * 24 * 60 * 60 * 1000
-                      );
-                      handleFilterChange(
-                        "startDate",
-                        lastWeek.toISOString().split("T")[0]
-                      );
-                      handleFilterChange(
-                        "endDate",
-                        today.toISOString().split("T")[0]
-                      );
-                    }}
-                    className="px-3 py-1.5 text-xs font-medium bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors duration-200"
-                  >
-                    Last 7 days
-                  </button>
-                  <button
-                    onClick={() => {
-                      const today = new Date();
-                      const lastMonth = new Date(
-                        today.getTime() - 30 * 24 * 60 * 60 * 1000
-                      );
-                      handleFilterChange(
-                        "startDate",
-                        lastMonth.toISOString().split("T")[0]
-                      );
-                      handleFilterChange(
-                        "endDate",
-                        today.toISOString().split("T")[0]
-                      );
-                    }}
-                    className="px-3 py-1.5 text-xs font-medium bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors duration-200"
-                  >
-                    Last 30 days
-                  </button>
-                  <button
-                    onClick={() => {
-                      const today = new Date();
-                      const thisMonth = new Date(
-                        today.getFullYear(),
-                        today.getMonth(),
-                        1
-                      );
-                      handleFilterChange(
-                        "startDate",
-                        thisMonth.toISOString().split("T")[0]
-                      );
-                      handleFilterChange(
-                        "endDate",
-                        today.toISOString().split("T")[0]
-                      );
-                    }}
-                    className="px-3 py-1.5 text-xs font-medium bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors duration-200"
-                  >
-                    This month
-                  </button>
-                  <button
-                    onClick={clearFilters}
-                    className="px-3 py-1.5 text-xs font-medium bg-red-100 dark:bg-red-900/20 text-red-700 dark:text-red-400 rounded-lg hover:bg-red-200 dark:hover:bg-red-900/30 transition-colors duration-200"
-                  >
-                    Clear all
-                  </button>
-                </div>
-              </div>
-
-              <div className="mt-8 flex items-center justify-end gap-2">
-                <button
-                  onClick={clearFilters}
-                  className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400"
-                >
-                  Reset
-                </button>
-                <button
-                  onClick={() => setShowFilters(false)}
-                  className="px-4 py-2 text-sm font-medium bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors duration-200"
-                >
-                  Apply
-                </button>
-              </div>
+          <div className="md:col-span-2">
+            <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Quick Filters</p>
+            <div className="flex flex-wrap gap-2">
+              <Button size="small" onClick={() => {
+                const today = dayjs();
+                const lastWeek = today.subtract(7, "day");
+                handleFilterChange("startDate", lastWeek.format("YYYY-MM-DD"));
+                handleFilterChange("endDate", today.format("YYYY-MM-DD"));
+              }}>Last 7 days</Button>
+              <Button size="small" onClick={() => {
+                const today = dayjs();
+                const lastMonth = today.subtract(30, "day");
+                handleFilterChange("startDate", lastMonth.format("YYYY-MM-DD"));
+                handleFilterChange("endDate", today.format("YYYY-MM-DD"));
+              }}>Last 30 days</Button>
+              <Button size="small" onClick={() => {
+                const today = dayjs();
+                const start = today.startOf("month");
+                handleFilterChange("startDate", start.format("YYYY-MM-DD"));
+                handleFilterChange("endDate", today.format("YYYY-MM-DD"));
+              }}>This month</Button>
+              <Button size="small" danger onClick={clearFilters}>Clear all</Button>
             </div>
           </div>
+
+          <div className="md:col-span-2 flex items-center justify-end gap-2 pt-2">
+            <Button onClick={clearFilters}>Reset</Button>
+            <Button type="primary" onClick={() => setShowFilters(false)}>Apply</Button>
+          </div>
         </div>
-      )}
+      </Modal>
     </div>
   );
 };

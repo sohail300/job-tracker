@@ -1,13 +1,11 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import {
   ArrowLeft,
-  Upload,
   X,
   Save,
   Building2,
-  Mail,
   Calendar,
   FileText,
   Image,
@@ -15,6 +13,9 @@ import {
   ChevronDown,
 } from "lucide-react";
 import SkeletonLoader from "../components/SkeletonLoader";
+import { Input, Select, DatePicker, Upload, Button } from "antd";
+import { InboxOutlined } from "@ant-design/icons";
+import dayjs from "dayjs";
 import { applicationsAPI } from "../services/api";
 import { format } from "date-fns";
 
@@ -35,6 +36,7 @@ const AddEditApplication = () => {
     handleSubmit,
     setValue,
     watch,
+    control,
     formState: { errors },
   } = useForm({
     defaultValues: {
@@ -155,11 +157,11 @@ const AddEditApplication = () => {
 
       if (isEdit) {
         await applicationsAPI.update(id, formData);
+        navigate(-1);
       } else {
         await applicationsAPI.create(formData);
+        navigate("/");
       }
-
-      navigate("/");
     } catch (error) {
       console.error("Error saving application:", error);
       setError("Failed to save application");
@@ -191,13 +193,13 @@ const AddEditApplication = () => {
       {/* Header */}
       <div className="flex items-center space-x-4">
         <button
-          onClick={() => navigate("/")}
+          onClick={() => (isEdit ? navigate(-1) : navigate("/"))}
           className="p-2 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-all duration-200"
         >
           <ArrowLeft className="h-5 w-5" />
         </button>
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+        <div className="">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-0">
             {isEdit ? "Edit Application" : "Add New Application"}
           </h1>
         </div>
@@ -213,101 +215,118 @@ const AddEditApplication = () => {
           )}
 
           {/* Company Name */}
-          <div className="input-floating">
-            <input
-              type="text"
-              {...register("company_name", {
-                required: "Company name is required",
-              })}
-              placeholder=" "
-              className="input-field"
-            />
-            <label className="flex items-center">
+          <div>
+            <label className="flex items-center text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               <Building2 className="h-4 w-4 mr-2" />
               Company Name *
             </label>
+            <Input
+              size="large"
+              {...register("company_name", { required: "Company name is required" })}
+              placeholder="Enter company name"
+            />
             {errors.company_name && (
-              <p className="text-red-600 dark:text-red-400 text-sm mt-2">
-                {errors.company_name.message}
-              </p>
+              <p className="text-red-600 dark:text-red-400 text-sm mt-2">{errors.company_name.message}</p>
             )}
           </div>
 
           {/* Link Type */}
-          <div>
+          <div className="w-full">
             <label className="flex items-center text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               <ChevronDown className="h-4 w-4 mr-2" />
               Application Type
             </label>
-            <select {...register("link_type")} className="input-field">
-              <option value="">Select application type</option>
-              <option value="email">Email</option>
-              <option value="job portal">Job Portal</option>
-              <option value="other">Other</option>
-            </select>
+            <Controller
+              name="link_type"
+              control={control}
+              render={({ field }) => (
+                <Select
+                  className="w-full"
+                  {...field}
+                  allowClear
+                  size="large"
+                  placeholder="Select application type"
+                  options={[
+                    { value: "email", label: "Email" },
+                    { value: "job portal", label: "Job Portal" },
+                    { value: "other", label: "Other" },
+                  ]}
+                  onChange={(val) => field.onChange(val)}
+                />
+              )}
+            />
 
             {showOtherTypeInput && (
               <div className="mt-3">
-                <input
-                  type="text"
+                <Input
+                  size="large"
                   {...register("other_link_type")}
                   placeholder="Specify application type"
-                  className="input-field"
                 />
               </div>
             )}
           </div>
 
           {/* Link */}
-          <div className="input-floating">
-            <input
-              type="url"
-              {...register("link")}
-              placeholder=" "
-              className="input-field"
-            />
-            <label className="flex items-center">
+          <div>
+            <label className="flex items-center text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               <Link className="h-4 w-4 mr-2" />
               Link
             </label>
+            <Input size="large" type="url" {...register("link")} placeholder="https://example.com/job" />
             <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
               URL to the job posting or application page
             </p>
           </div>
 
           {/* Date of Applying */}
-          <div className="input-floating">
-            <input
-              type="date"
-              {...register("date_of_applying", {
-                required: "Date is required",
-              })}
-              placeholder=" "
-              className="input-field"
-            />
-            <label className="flex items-center">
+          <div>
+            <label className="flex items-center text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               <Calendar className="h-4 w-4 mr-2" />
               Date of Applying *
             </label>
+            <Controller
+              name="date_of_applying"
+              control={control}
+              rules={{ required: "Date is required" }}
+              render={({ field }) => (
+                <DatePicker
+                  size="large"
+                  style={{ width: "100%" }}
+                  value={field.value ? dayjs(field.value) : null}
+                  onChange={(date) => field.onChange(date ? date.format("YYYY-MM-DD") : "")}
+                />
+              )}
+            />
             {errors.date_of_applying && (
-              <p className="text-red-600 dark:text-red-400 text-sm mt-2">
-                {errors.date_of_applying.message}
-              </p>
+              <p className="text-red-600 dark:text-red-400 text-sm mt-2">{errors.date_of_applying.message}</p>
             )}
           </div>
 
           {/* Status */}
-          <div>
+          <div className="w-full">
             <label className="flex items-center text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               <ChevronDown className="h-4 w-4 mr-2" />
               Status
             </label>
-            <select {...register("status")} className="input-field">
-              <option value="Pending">Pending</option>
-              <option value="Not Hiring">Not Hiring</option>
-              <option value="Rejected">Rejected</option>
-              <option value="Accepted">Accepted</option>
-            </select>
+            <Controller
+              name="status"
+              control={control}
+              render={({ field }) => (
+                <Select
+                  className="w-full"
+                  {...field}
+                  size="large"
+                  options={[
+                    { value: "Pending", label: "Pending" },
+                    { value: "Not Hiring", label: "Not Hiring" },
+                    { value: "Rejected", label: "Rejected" },
+                    { value: "Accepted", label: "Accepted" },
+                  ]}
+                  onChange={(val) => field.onChange(val)}
+                />
+              )}
+            />
           </div>
 
           {/* Photo Upload */}
@@ -316,62 +335,32 @@ const AddEditApplication = () => {
               <Image className="h-4 w-4 mr-2" />
               Photo (Optional)
             </label>
-
-            {photoPreview ? (
-              <div className="relative inline-block group">
-                <img
-                  src={photoPreview}
-                  alt="Preview"
-                  className="w-32 h-32 object-cover rounded-xl border border-gray-200 dark:border-gray-600 shadow-soft"
-                />
-                <button
-                  type="button"
-                  onClick={removePhoto}
-                  className="absolute -top-2 -right-2 bg-red-500 hover:bg-red-600 text-white rounded-full p-1.5 shadow-medium transition-all duration-200 opacity-0 group-hover:opacity-100"
-                >
+            {photoPreview && (
+              <div className="relative inline-block group mb-3">
+                <img src={photoPreview} alt="Preview" className="w-32 h-32 object-cover rounded-xl border border-gray-200 dark:border-gray-600 shadow-soft" />
+                <button type="button" onClick={removePhoto} className="absolute -top-2 -right-2 bg-red-500 hover:bg-red-600 text-white rounded-full p-1.5 shadow-medium transition-all duration-200">
                   <X className="h-3 w-3" />
                 </button>
               </div>
-            ) : (
-              <div
-                className={`border-2 border-dashed rounded-xl p-8 text-center transition-all duration-200 ${
-                  dragActive
-                    ? "border-primary-400 bg-primary-50 dark:bg-primary-900/20"
-                    : "border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500"
-                }`}
-                onDragEnter={handleDrag}
-                onDragLeave={handleDrag}
-                onDragOver={handleDrag}
-                onDrop={handleDrop}
-              >
-                <div className="space-y-4">
-                  <div className="mx-auto w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center">
-                    <Upload className="h-8 w-8 text-gray-400 dark:text-gray-500" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-1">
-                      Drop your image here, or{" "}
-                      <label
-                        htmlFor="photo-upload"
-                        className="text-primary-600 dark:text-primary-400 cursor-pointer hover:underline"
-                      >
-                        browse
-                      </label>
-                    </p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">
-                      PNG, JPG, GIF up to 10MB
-                    </p>
-                  </div>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleFileInput}
-                    className="hidden"
-                    id="photo-upload"
-                  />
-                </div>
-              </div>
             )}
+            <Upload.Dragger
+              name="file"
+              multiple={false}
+              beforeUpload={() => false}
+              maxCount={1}
+              accept="image/*"
+              onChange={({ file }) => {
+                const real = file.originFileObj || file;
+                if (real) handlePhotoChange(real);
+              }}
+              showUploadList={false}
+            >
+              <p className="ant-upload-drag-icon">
+                <InboxOutlined />
+              </p>
+              <p className="ant-upload-text">Click or drag image to upload</p>
+              <p className="ant-upload-hint">PNG, JPG, GIF up to 10MB</p>
+            </Upload.Dragger>
           </div>
 
           {/* Notes */}
@@ -380,37 +369,33 @@ const AddEditApplication = () => {
               <FileText className="h-4 w-4 mr-2" />
               Notes / Additional Info
             </label>
-            <textarea
+            <Input.TextArea
               {...register("notes")}
               rows={4}
-              className="input-field resize-none"
               placeholder="Add any additional notes about this application..."
             />
           </div>
 
           {/* Submit Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 pt-6 border-t border-gray-200 dark:border-gray-700">
-            <button
-              type="button"
-              onClick={() => navigate("/")}
-              className="btn-secondary flex-1 order-2 sm:order-1"
+            <Button
+              type="default"
+              onClick={() => (isEdit ? navigate(-1) : navigate("/"))}
+              className="flex-1 order-2 sm:order-1"
+              size="large"
             >
               Cancel
-            </button>
-            <button
-              type="submit"
-              disabled={loading}
-              className="btn-primary flex-1 flex items-center justify-center space-x-2 order-1 sm:order-2"
+            </Button>
+            <Button
+              type="primary"
+              htmlType="submit"
+              loading={loading}
+              className="flex-1 order-1 sm:order-2"
+              size="large"
+              icon={<Save className="h-4 w-4" />}
             >
-              {loading ? (
-                <div className="loading-spinner h-4 w-4 border-white"></div>
-              ) : (
-                <>
-                  <Save className="h-4 w-4" />
-                  <span>{isEdit ? "Update" : "Save"} Application</span>
-                </>
-              )}
-            </button>
+              {isEdit ? "Update" : "Save"} Application
+            </Button>
           </div>
         </form>
       </div>
