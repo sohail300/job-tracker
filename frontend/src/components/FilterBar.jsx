@@ -162,10 +162,24 @@ const FilterBar = ({ onFilterChange, value, applicationTypes = [] }) => {
               Status
             </label>
             <Checkbox.Group
-              options={["Pending", "Not Hiring", "Rejected", "Accepted"]}
+              className="w-full"
               value={filters.status}
               onChange={(list) => handleFilterChange("status", list)}
-            />
+            >
+              <div className="grid grid-cols-4 gap-2 w-full">
+                {[
+                  "Pending",
+                  "Not Hiring",
+                  "Rejected",
+                  "Accepted",
+                  "Followed up",
+                ].map((label) => (
+                  <Checkbox key={label} value={label}>
+                    {label}
+                  </Checkbox>
+                ))}
+              </div>
+            </Checkbox.Group>
           </div>
 
           <div className="space-y-2 md:col-span-2">
@@ -175,15 +189,22 @@ const FilterBar = ({ onFilterChange, value, applicationTypes = [] }) => {
             {applicationTypes.length === 0 ? (
               <p className="text-sm text-gray-500 dark:text-gray-400">No application types found.</p>
             ) : (
-              <Select
-                mode="multiple"
-                allowClear
-                placeholder="Select application types"
+              <Checkbox.Group
+                className="w-full"
                 value={filters.applicationTypes}
-                onChange={(vals) => handleFilterChange("applicationTypes", vals)}
-                options={applicationTypes.map((t) => ({ value: t, label: String(t).split(" ").map(w => w.charAt(0).toUpperCase()+w.slice(1)).join(" ") }))}
-                style={{ width: "100%" }}
-              />
+                onChange={(list) => handleFilterChange("applicationTypes", list)}
+              >
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 w-full">
+                  {applicationTypes.map((type) => (
+                    <Checkbox key={type} value={type}>
+                      {String(type)
+                        .split(" ")
+                        .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+                        .join(" ")}
+                    </Checkbox>
+                  ))}
+                </div>
+              </Checkbox.Group>
             )}
           </div>
 

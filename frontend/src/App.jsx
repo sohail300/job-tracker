@@ -8,6 +8,7 @@ import Login from "./pages/Login";
 import AuthSuccess from "./pages/AuthSuccess";
 import AuthCallback from "./pages/AuthCallback";
 import Layout from "./components/Layout";
+import Templates from "./pages/Templates";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { AuthProvider } from "./contexts/AuthContext";
 import { useAuth } from "./contexts/AuthContext";
@@ -58,6 +59,7 @@ function App() {
                     <Route path="" element={<Home />} />
                     <Route path="add" element={<AddEditApplication />} />
                     <Route path="edit/:id" element={<AddEditApplication />} />
+                    <Route path="templates" element={<Templates />} />
                   </Routes>
                 </Layout>
               </ProtectedRoute>

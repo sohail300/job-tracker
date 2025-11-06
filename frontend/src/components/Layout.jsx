@@ -31,7 +31,7 @@ const Layout = ({ children }) => {
                 <div className="p-2 bg-primary-100 dark:bg-primary-900 rounded-xl">
                   <Briefcase className="h-6 w-6 text-primary-600 dark:text-primary-400" />
                 </div>
-                <h1 className="text-xl font-bold gradient-text">Job Tracker</h1>
+                <h1 className="text-xl font-bold gradient-text">Job Application Tracker</h1>
               </div>
             </div>
 
@@ -56,6 +56,17 @@ const Layout = ({ children }) => {
                 }`}
               >
                 Add Application
+              </Link>
+
+              <Link
+                to="/applications/templates"
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                  location.pathname === "/applications/templates"
+                    ? "bg-primary-100 dark:bg-primary-900 text-primary-700 dark:text-primary-300 shadow-soft"
+                    : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800"
+                }`}
+              >
+                Templates
               </Link>
 
               <div className="ml-4 flex items-center space-x-3">
@@ -148,6 +159,18 @@ const Layout = ({ children }) => {
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   Add Application
+                </Link>
+
+                <Link
+                  to="/applications/templates"
+                  className={`px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 ${
+                    location.pathname === "/applications/templates"
+                      ? "bg-primary-100 dark:bg-primary-900 text-primary-700 dark:text-primary-300"
+                      : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800"
+                  }`}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  Templates
                 </Link>
 
                 {/* Divider */}

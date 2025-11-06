@@ -12,7 +12,7 @@ const Landing = () => {
             <div className="p-2 bg-primary-100 dark:bg-primary-900 rounded-xl">
               <Briefcase className="h-6 w-6 text-primary-600 dark:text-primary-400" />
             </div>
-            <span className="text-lg font-bold gradient-text">Job Tracker</span>
+            <span className="text-lg font-bold gradient-text">Job Application Tracker</span>
           </div>
           <div className="hidden sm:flex items-center space-x-3">
             <ThemeToggle />

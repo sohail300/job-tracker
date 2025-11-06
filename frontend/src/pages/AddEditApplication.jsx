@@ -41,7 +41,6 @@ const AddEditApplication = () => {
   } = useForm({
     defaultValues: {
       company_name: "",
-      email_or_portal: "",
       link: "",
       link_type: "",
       other_link_type: "",
@@ -69,7 +68,6 @@ const AddEditApplication = () => {
       const application = await applicationsAPI.getById(id);
 
       setValue("company_name", application.company_name);
-      setValue("email_or_portal", application.email_or_portal || "");
       setValue("link", application.link || "");
       setValue("link_type", application.link_type || "");
       setValue("other_link_type", "");
@@ -139,7 +137,6 @@ const AddEditApplication = () => {
 
       const formData = new FormData();
       formData.append("company_name", data.company_name);
-      formData.append("email_or_portal", data.email_or_portal || "");
       formData.append("link", data.link || "");
 
       // Handle link type - use "other" value if "other" is selected
@@ -248,6 +245,8 @@ const AddEditApplication = () => {
                   placeholder="Select application type"
                   options={[
                     { value: "email", label: "Email" },
+                    { value: "x", label: "X" },
+                    { value: "linkedin", label: "LinkedIn" },
                     { value: "job portal", label: "Job Portal" },
                     { value: "other", label: "Other" },
                   ]}
@@ -322,6 +321,7 @@ const AddEditApplication = () => {
                     { value: "Not Hiring", label: "Not Hiring" },
                     { value: "Rejected", label: "Rejected" },
                     { value: "Accepted", label: "Accepted" },
+                    { value: "Followed up", label: "Followed up" },
                   ]}
                   onChange={(val) => field.onChange(val)}
                 />

@@ -126,10 +126,6 @@ const Home = () => {
       filtered = filtered.filter(
         (app) =>
           app.company_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          (app.email_or_portal &&
-            app.email_or_portal
-              .toLowerCase()
-              .includes(searchTerm.toLowerCase())) ||
           (app.notes &&
             app.notes.toLowerCase().includes(searchTerm.toLowerCase()))
       );
