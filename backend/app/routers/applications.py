@@ -24,7 +24,6 @@ def serialize_application_document(document: dict) -> dict:
 @router.post("/")
 async def create_application(
     company_name: str = Form(...),
-    email_or_portal: Optional[str] = Form(None),
     link: Optional[str] = Form(None),
     link_type: Optional[str] = Form(None),
     date_of_applying: str = Form(...),
@@ -49,7 +48,7 @@ async def create_application(
             photo_url = upload_result["secure_url"]
         
         # Validate status
-        allowed_statuses = {"Pending", "Not Hiring", "Rejected", "Accepted"}
+        allowed_statuses = {"Pending", "Not Hiring", "Rejected", "Accepted", "Followed up"}
         if status is None or status not in allowed_statuses:
             status = "Pending"
 
@@ -57,7 +56,6 @@ async def create_application(
         application_data = {
             "user_id": ObjectId(current_user["user_id"]),
             "company_name": company_name,
-            "email_or_portal": email_or_portal,
             "link": link,
             "link_type": link_type,
             "date_of_applying": date_obj,
@@ -123,7 +121,6 @@ async def get_application(
 async def update_application(
     application_id: str,
     company_name: Optional[str] = Form(None),
-    email_or_portal: Optional[str] = Form(None),
     link: Optional[str] = Form(None),
     link_type: Optional[str] = Form(None),
     date_of_applying: Optional[str] = Form(None),
@@ -151,8 +148,6 @@ async def update_application(
         update_data = {}
         if company_name is not None:
             update_data["company_name"] = company_name
-        if email_or_portal is not None:
-            update_data["email_or_portal"] = email_or_portal
         if link is not None:
             update_data["link"] = link
         if link_type is not None:
@@ -162,7 +157,7 @@ async def update_application(
         if notes is not None:
             update_data["notes"] = notes
         if status is not None:
-            allowed_statuses = {"Pending", "Not Hiring", "Rejected", "Accepted"}
+            allowed_statuses = {"Pending", "Not Hiring", "Rejected", "Accepted", "Followed up"}
             if status in allowed_statuses:
                 update_data["status"] = status
         
