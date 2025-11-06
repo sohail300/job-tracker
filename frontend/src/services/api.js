@@ -1,7 +1,7 @@
 import axios from "axios";
 
-export const API_BASE_URL = "http://localhost:8000/api";
-// export const API_BASE_URL = "https://job-tracker-c78l.onrender.com/api";
+// export const API_BASE_URL = "http://localhost:8000/api";
+export const API_BASE_URL = "https://job-tracker-c78l.onrender.com/api";
 
 const api = axios.create({
   baseURL: API_BASE_URL,
