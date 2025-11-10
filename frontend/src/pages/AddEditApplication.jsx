@@ -67,10 +67,21 @@ const AddEditApplication = () => {
       setLoading(true);
       const application = await applicationsAPI.getById(id);
 
-      setValue("company_name", application.company_name);
+      const predefinedLinkTypes = ["email", "x", "linkedin", "job portal", "other"];
+      const linkType = application.link_type || "";
+      const isCustomLinkType = linkType && !predefinedLinkTypes.includes(linkType);
+
+      setValue("company_name", application.company_name || "");
       setValue("link", application.link || "");
-      setValue("link_type", application.link_type || "");
-      setValue("other_link_type", "");
+      
+      if (isCustomLinkType) {
+        setValue("link_type", "other");
+        setValue("other_link_type", linkType);
+      } else {
+        setValue("link_type", linkType);
+        setValue("other_link_type", "");
+      }
+      
       setValue(
         "date_of_applying",
         format(new Date(application.date_of_applying), "yyyy-MM-dd")
@@ -217,10 +228,17 @@ const AddEditApplication = () => {
               <Building2 className="h-4 w-4 mr-2" />
               Company Name *
             </label>
-            <Input
-              size="large"
-              {...register("company_name", { required: "Company name is required" })}
-              placeholder="Enter company name"
+            <Controller
+              name="company_name"
+              control={control}
+              rules={{ required: "Company name is required" }}
+              render={({ field }) => (
+                <Input
+                  size="large"
+                  {...field}
+                  placeholder="Enter company name"
+                />
+              )}
             />
             {errors.company_name && (
               <p className="text-red-600 dark:text-red-400 text-sm mt-2">{errors.company_name.message}</p>
@@ -257,10 +275,16 @@ const AddEditApplication = () => {
 
             {showOtherTypeInput && (
               <div className="mt-3">
-                <Input
-                  size="large"
-                  {...register("other_link_type")}
-                  placeholder="Specify application type"
+                <Controller
+                  name="other_link_type"
+                  control={control}
+                  render={({ field }) => (
+                    <Input
+                      size="large"
+                      {...field}
+                      placeholder="Specify application type"
+                    />
+                  )}
                 />
               </div>
             )}
@@ -272,7 +296,18 @@ const AddEditApplication = () => {
               <Link className="h-4 w-4 mr-2" />
               Link
             </label>
-            <Input size="large" type="url" {...register("link")} placeholder="https://example.com/job" />
+            <Controller
+              name="link"
+              control={control}
+              render={({ field }) => (
+                <Input
+                  size="large"
+                  type="url"
+                  {...field}
+                  placeholder="https://example.com/job"
+                />
+              )}
+            />
             <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
               URL to the job posting or application page
             </p>
@@ -369,10 +404,16 @@ const AddEditApplication = () => {
               <FileText className="h-4 w-4 mr-2" />
               Notes / Additional Info
             </label>
-            <Input.TextArea
-              {...register("notes")}
-              rows={4}
-              placeholder="Add any additional notes about this application..."
+            <Controller
+              name="notes"
+              control={control}
+              render={({ field }) => (
+                <Input.TextArea
+                  {...field}
+                  rows={4}
+                  placeholder="Add any additional notes about this application..."
+                />
+              )}
             />
           </div>
 
